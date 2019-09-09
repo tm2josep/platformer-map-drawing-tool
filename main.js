@@ -5,10 +5,10 @@ import { drawTileBorders } from './drawingTools.js';
 
 let canvas = document.getElementById('screen');
 let context = canvas.getContext('2d');
+const jManager = new JSONManager('./1-1.json');
+const tiles = new TileManager();
 
 (async function () {
-    const jManager = new JSONManager('./1-1.json');
-    const tiles = new TileManager();
     tiles.defineTile('earth', 'lightbrown');
     tiles.defineTile('flat', 'lightgreen');
     tiles.defineTile('default', 'lightgray');
@@ -26,8 +26,14 @@ let context = canvas.getContext('2d');
     setInterval(() => {
         drawTileBorders(context);
         jManager.drawTiles(context, tiles)
-    }, 200)
+    }, 200);
 })();
+
+function makeJson() {
+    document.getElementById('json-output').innerHTML = jManager.jsonString
+}
+
+document.getElementById('generate').addEventListener('click', makeJson)
 
 class InputHandler {
     constructor(element, callback, undo) {
@@ -61,6 +67,14 @@ class InputHandler {
             let a = this.point[1];
             this.point[1] = y;
             y = a;
+        }
+
+        if (this.point[0] - x === 0) {
+            return;
+        }
+
+        if (this.point[1] - y === 0) {
+            return;
         }
 
         this.point = [this.point[0], x, this.point[1], y];
